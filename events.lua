@@ -25,7 +25,10 @@ minetest.register_on_player_receive_fields(
                 tcp:close()
                 return
             end
-            local conn = np.attach(tcp, "dievri", "")
+            local conn = np.attach(tcp, "root", "")
             tcp:close()
+            local p1 = {x = 0, y = 0, z = 0}
+            local p2 = p1
+            platforms.create(p1, 8, "horizontal")
         end
     end)
