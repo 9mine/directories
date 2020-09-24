@@ -31,7 +31,7 @@ minetest.register_tool("directories:spawn_rootdir", {
         local formspec = {
             "formspec_version[3]", "size[10,3,false]",
             "field[0.5,0.5;9,1;remote_address;Enter remote address;]",
-            "button_exit[7,1.8;2.5,0.9;spawn;spawn]"
+            "button_exit[7,1.8;2.5,0.9;spawn_rootdir;spawn_rootdir]"
         }
         local form = table.concat(formspec, "")
         minetest.show_formspec(player_name, "directories:spawn_rootdir", form)

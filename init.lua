@@ -1,3 +1,4 @@
+print("directories mod is started loading ...")
 -- libs
 data = require 'data'
 np = require '9p'
