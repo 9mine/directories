@@ -19,14 +19,8 @@ minetest.register_on_player_receive_fields(
                 path = conn_path
             }
             local tcp = socket:tcp()
-            local connection, err = tcp:connect(conn_host, conn_port)
-            if (err ~= nil) then
-                print("Connection error: " .. dump(err))
-                tcp:close()
-                return
-            end
-            local conn = np.attach(tcp, "root", "")
-            tcp:close()
+            local content = get_dir(host_info, conn_path)
+            print("dump content" .. dump(content))
             local p1 = {x = 0, y = 0, z = 0}
             local p2 = p1
             platforms.create(p1, 8, "horizontal")
