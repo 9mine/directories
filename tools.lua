@@ -35,7 +35,6 @@ minetest.register_tool("directories:spawn_rootdir", {
         }
         local form = table.concat(formspec, "")
         minetest.show_formspec(player_name, "directories:spawn_rootdir", form)
-
     end
 })
 
