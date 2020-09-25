@@ -5,9 +5,8 @@ minetest.register_on_player_receive_fields(
             local host_info = parse_remote_address(fields["remote_address"])
             if not host_info["host"] or not host_info["port"] then return end
             local content = get_dir(host_info, host_info.path)
-            local size = content == nil and 2 or #content
+            local size = content == nil and 2 or math.ceil(math.sqrt((#content / 15) * 100))
             local pos = get_pos_rand(player, size)
-            print("POS IN EVENTS: " .. dump(pos))
             platforms.create(pos, size, "horizontal", "mine9:platform")
             if content ~= nil then
                 list_dir(content, pos)

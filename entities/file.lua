@@ -4,7 +4,7 @@ minetest.register_entity("directories:file", {
         pointable = true,
         visual = "sprite",
         collide_with_objects = true,
-        textures = {"cdmod_folder.png"},
+        textures = {"directories_file.png"},
         spritediv = {x = 1, y = 1},
         initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true,
