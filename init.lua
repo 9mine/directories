@@ -7,6 +7,7 @@ pprint = require 'pprint'
 readdir = require 'readdir'
 -- mod files
 local path = minetest.get_modpath("directories")
+dofile(path .. "/help_func.lua")
 dofile(path .. "/tools.lua")
 dofile(path .. "/events.lua")
 dofile(path .. "/on_join.lua")

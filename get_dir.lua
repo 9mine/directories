@@ -7,7 +7,6 @@ get_dir = function(host_info, path)
         return
     end
     local conn = np.attach(tcp, "root", "")
-    print("dump")
     local result, dir = pcall(readdir, conn, path == "/" and "./" or path)
     if not result then
         tcp:close()
@@ -18,7 +17,6 @@ get_dir = function(host_info, path)
         table.insert(content, {
             name = file.name,
             path = (path == "/" and "/" .. file.name or path .. "/" .. file.name),
-            -- if not dir, than file
             type = (file.qid.type == 128 and 128 or 0)
         })
     end
