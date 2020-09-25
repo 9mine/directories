@@ -23,7 +23,13 @@ get_pos_rand = function(player, s)
     print("POSITION: " .. dump(p))
     print("DIRECTION: " .. dump(d))
     print("SIZE: " .. dump(s))
-    local z = vector.new(math.random(s), math.random(s), math.random(s))
-    print("ZERO VECTOR: " .. dump(z))
-    return vector.add(p, vector.multiply(vector.add(p, z), d))
+    local ds = 1
+    -- TODO: spawn in right position
+    -- local s = vector.new(ds, ds, ds)
+    -- local increase = vector.multiply(d, s)
+    -- local endpoint = vector.add(p, increase)
+    -- endPos = startPos + direction * distance;
+    local c = vector.new(s, 0, s)
+
+    return vector.round(vector.add(p, vector.multiply(c, d)))
 end
