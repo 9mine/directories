@@ -16,3 +16,14 @@ parse_remote_address = function(remote_address)
     }
     return host_info
 end
+
+get_pos_rand = function(player, s)
+    local p = player:get_pos()
+    local d = player:get_look_dir()
+    print("POSITION: " .. dump(p))
+    print("DIRECTION: " .. dump(d))
+    print("SIZE: " .. dump(s))
+    local z = vector.new(math.random(s), math.random(s), math.random(s))
+    print("ZERO VECTOR: " .. dump(z))
+    return vector.add(p, vector.multiply(vector.add(p, z), d))
+end
