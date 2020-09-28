@@ -1,12 +1,13 @@
 parse_mode_bits = function(mode)
     local res = {}
     local perms = {
-        ["DMDIR"] = 0x80,
-        ["DMAPPEND"] = 0x40,
-        ["DMEXCL"] = 0x20,
-        ["DMMOUNT"] = 0x10,
-        ["DMAUTH"] = 0x08,
-        ["DMTMP"] = 0x04
+        ["DIR"] = 0x80,
+        ["APPEND"] = 0x40,
+        ["EXCL"] = 0x20,
+        ["MOUNT"] = 0x10,
+        ["AUTH"] = 0x08,
+        ["TMP"] = 0x04,
+        ["LINK"] = 0x02,
     }
 
     local owner = {}
@@ -191,7 +192,6 @@ show_stats = function(puncher, path)
     local host_info = get_host_near(puncher)
     local s = get_stats(host_info, path)
     local result = parse_mode_bits(s.mode)
-    
     local mode_bits = ""
     for k, v in ipairs(result["mode_bits"]) do 
         mode_bits = mode_bits .. v .. " "  
@@ -211,13 +211,14 @@ show_stats = function(puncher, path)
             "access:\t\t" .. os.date("%x %X", s.atime) .. "\n" .. 
             "modified:\t\t" .. os.date("%x %X", s.mtime) .. "\n" .. 
             "mod. by:\t\t" .. (s.muid == "" and "-" or s.muid) .. "\n" .. 
-            "mode:\t\t" .. (mode_bits == "" and "-" or mode_bits) .. "\n" .. 
+            "mode:\t\t" .. (mode_bits == "" and "FILE" or mode_bits) .. "\n" .. 
             "perms:\t\t" .. perms .. "\n" ..
             "type:\t\t" .. s.type .. "\n" .. 
             "qid:\t\t" .. "\n" .. 
             "       type:\t" .. s.qid.type .. "\n" ..
             "       version:\t" .. s.qid.version .. "\n" .. 
             "       path:\t" .. s.qid.path .. "\n",
+
 
         alignment = {x = 1, y = 0} -- center aligned
         -- scale = {x = 250, y = 100} -- covered later
