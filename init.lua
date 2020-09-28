@@ -10,6 +10,7 @@ bit = require("bit")
 -- mod files
 current_hud = {}
 local path = minetest.get_modpath("directories")
+dofile(path .. "/help_func_files.lua")
 dofile(path .. "/entities/dir.lua")
 dofile(path .. "/entities/file.lua")
 dofile(path .. "/help_func.lua")
