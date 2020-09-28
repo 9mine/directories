@@ -5,6 +5,8 @@ data = require 'data'
 socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
+filesize = require 'filesize'
+bit = require("bit")
 -- mod files
 current_hud = {}
 local path = minetest.get_modpath("directories")
