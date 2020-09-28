@@ -33,10 +33,14 @@ minetest.register_entity("directories:dir", {
                                       math.ceil(math.sqrt((dir_size / 15) * 100))
 
             platforms.create(pos, platform_size, orientation, "mine9:platform")
-            platforms.set_meta(pos, platform_size, "horizontal", "host_info", host_info)
+            platforms.set_meta(pos, platform_size, "horizontal", "host_info",
+                               host_info)
             puncher:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
             list_dir(content, pos)
+        end
 
+        if tool_capabilities.damage_groups.stats == 1 then
+            show_stats(puncher, self.path)
         end
     end,
 

@@ -11,7 +11,7 @@ get_stats = function(host_info, path)
     local f = conn:newfid()
     local stats = nil
     if pcall(np.walk, conn, conn.rootfid, f, path) then
-        conn:open(f, 2)
+        conn:open(f, 0)
         stats = conn:stat(f)
         conn:clunk(f)
     end
@@ -123,4 +123,32 @@ get_host_near = function(puncher)
     local pos = puncher:get_pos()
     local node_pos = minetest.find_node_near(pos, 6, {"mine9:platform"})
     return platforms.get_host_info(node_pos)
+end
+
+show_stats = function(puncher, path) 
+    local host_info = get_host_near(puncher)
+    local s = get_stats(host_info, path)
+    puncher:hud_remove(current_hud[puncher:get_player_name()])
+    local stats = puncher:hud_add({
+        hud_elem_type = "text",
+        position = {x = .8, y = 0.2},
+        offset = {x = 0, y = 0},
+        text =  "name:\t\t" .. s.name .. "\n" .. 
+                "length:\t\t" .. s.length .. "\n" .. 
+                "owner:\t\t" .. s.uid .. "\n" ..
+                "group:\t\t" .. s.gid .. "\n" .. 
+                "access:\t\t" .. s.atime .. "\n" ..
+                "modified:\t\t" .. s.mtime .. "\n" ..
+                "mod. by:\t\t" .. s.muid .. "\n" ..
+                "mode:\t\t" .. s.mode .. "\n" ..   
+                "type:\t\t" .. s.type .. "\n" ..                                                     
+                "qid:\t\t" .. "\n" ..
+                "       type:\t" .. s.qid.type .. "\n" .. 
+                "       version:\t" .. s.qid.version .. "\n" ..                                
+                "       path:\t" .. s.qid.path .. "\n",                           
+                             
+        alignment = {x = -1, y = 0}, -- center aligned
+        scale = {x = 250, y = 100} -- covered later
+    })
+    current_hud[puncher:get_player_name()] = stats
 end

@@ -6,6 +6,7 @@ socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
 -- mod files
+current_hud = {}
 local path = minetest.get_modpath("directories")
 dofile(path .. "/entities/dir.lua")
 dofile(path .. "/entities/file.lua")
