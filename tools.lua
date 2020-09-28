@@ -1,3 +1,10 @@
+minetest.register_tool("directories:stats", {
+    desription = "Read stats",
+    inventory_image = "directories_stats.png",
+    wield_image = "directories_stats.png",
+    tool_capabilities = {punch_attack_uses = 0, damage_groups = {stats = 1}}
+})
+
 minetest.register_tool("directories:enter", {
     desription = "Enter key",
     inventory_image = "directories_enter.png",

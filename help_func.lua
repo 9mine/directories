@@ -1,3 +1,24 @@
+get_stats = function(host_info, path)
+    local tcp = socket:tcp()
+    local connection, err = tcp:connect(host_info["host"], host_info["port"])
+    if (err ~= nil) then
+        print("Connection error: " .. dump(err))
+        tcp:close()
+        return
+    end
+    local conn = np.attach(tcp, "root", "/")
+
+    local f = conn:newfid()
+    local stats = nil
+    if pcall(np.walk, conn, conn.rootfid, f, path) then
+        conn:open(f, 2)
+        stats = conn:stat(f)
+        conn:clunk(f)
+    end
+    tcp:close()
+    return stats
+end
+
 get_dir = function(host_info, path)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
@@ -56,11 +77,13 @@ list_dir = function(content, pos)
     local empty_slots = platforms.get_empty_slots(pos)
     local orientation = platforms.get_creation_info(pos).orientation
     local full_slots = {}
-    for n, file in pairs(content) do
-        local index, empty_slot = next(empty_slots)
-        local p = spawn_file(file, empty_slot, orientation)
-        table.insert(full_slots, p)
-        table.remove(empty_slots, index)
+    if content ~= nil then
+        for n, file in pairs(content) do
+            local index, empty_slot = next(empty_slots)
+            local p = spawn_file(file, empty_slot, orientation)
+            table.insert(full_slots, p)
+            table.remove(empty_slots, index)
+        end
     end
     platforms.set_empty_slots(pos, empty_slots)
     platforms.set_full_slots(pos, full_slots)
@@ -94,4 +117,10 @@ spawn_file = function(file, empty_slot, orientation)
     })
     entity:get_luaentity().path = file.path
     return p, entity
+end
+
+get_host_near = function(puncher)
+    local pos = puncher:get_pos()
+    local node_pos = minetest.find_node_near(pos, 6, {"mine9:platform"})
+    return platforms.get_host_info(node_pos)
 end
