@@ -13,16 +13,18 @@ get_dir = function(host_info, path)
         return
     end
     local content = {}
-    for n, file in pairs(dir) do
-        table.insert(content, {
-            name = file.name,
-            path = (path == "/" and "/" .. file.name or path .. "/" .. file.name),
-            type = (file.qid.type == 128 and 128 or 0)
-        })
+    if dir ~= nil then
+        for n, file in pairs(dir) do
+            table.insert(content, {
+                name = file.name,
+                path = (path == "/" and "/" .. file.name or path .. "/" ..
+                    file.name),
+                type = (file.qid.type == 128 and 128 or 0)
+            })
+        end
+        return content
     end
-    return content
 end
-
 
 parse_remote_address = function(remote_address)
     local t = {}
@@ -65,6 +67,13 @@ list_dir = function(content, pos)
 
 end
 
+get_next_pos = function(origin)
+    local x = origin.x + math.random(-15, 15)
+    local y = origin.y + 10 + math.random(5)
+    local z = origin.z + math.random(-15, 15)
+    return {x = x, y = y, z = z}
+end
+
 spawn_file = function(file, empty_slot, orientation)
     local p = {
         x = empty_slot.x,
@@ -73,8 +82,9 @@ spawn_file = function(file, empty_slot, orientation)
         z = orientation == "horizontal" and empty_slot.z or empty_slot.z +
             math.random(3, 8)
     }
-    local entity = minetest.add_entity(p, file.type == 128 and "directories:dir" or
-                                     "directories:file")
+    local entity = minetest.add_entity(p,
+                                       file.type == 128 and "directories:dir" or
+                                           "directories:file")
     entity:set_nametag_attributes({color = "black", text = file.name})
     entity:set_armor_groups({immortal = 0})
     entity:set_acceleration({

@@ -20,70 +20,22 @@ minetest.register_entity("directories:dir", {
                         dir)
         if tool_capabilities.damage_groups.enter == 1 then
             local pos = puncher:get_pos()
-            -- find glass in radius of 6
-            local node_pos = minetest.find_node_near(pos, 6, {"cdmod:platform"})
-            local node = minetest.get_meta(
-                             {x = node_pos.x, y = node_pos.y, z = node_pos.z})
-            local corner = node:get_string("corner")
-            local corner_pos = minetest.deserialize(corner)
+            local node_pos = minetest.find_node_near(pos, 6, {"mine9:platform"})
+            local host_info = platforms.get_host_info(node_pos)
+            local origin = platforms.get_creation_info(node_pos).origin
+            local pos = get_next_pos(origin)
+            local content = get_dir(host_info, self.path)
+            local orientation = "horizontal"
+            local dir_size = content == nil and 2 or #content
 
-            local corner_node = minetest.get_meta(
-                                    {
-                    x = corner_pos.x,
-                    y = corner_pos.y,
-                    z = corner_pos.z
-                })
+            local platform_size = math.ceil(math.sqrt((dir_size / 15) * 100)) <
+                                      3 and 3 or
+                                      math.ceil(math.sqrt((dir_size / 15) * 100))
 
-            local cs = corner_node:get_string("new_center")
-            local c = minetest.deserialize(cs)
-            local cp = {x = c.x, y = c.y, z = c.z}
-            local size = corner_pos.s
-            local orientation = corner_pos.o
-
-            local host_info_string = corner_node:get_string("host")
-            local host_info = minetest.deserialize(host_info_string)
-
-            local tcp = socket:tcp()
-            local connection, err = tcp:connect(host_info["host"],
-                                                host_info["port"])
-            if (err ~= nil) then
-                print("dump of error newest .. " .. dump(err))
-                error("Connection error")
-            end
-            local conn = np.attach(tcp, "dievri", "")
-            local content = read_directory(conn, self.path)
-
-            local f = conn:newfid()
-            if pcall(np.walk, conn, conn.rootfid, f, self.path .. "/.viz") ==
-                false then
-                print("no vertical file")
-            else
-                conn:open(f, 2)
-                local statistics = conn:stat(f)
-                local buf = conn:read(f, 0, statistics.length - 1)
-                if tostring(buf) == "vertical" then
-                    orientation = "v"
-                end
-                conn:clunk(f)
-            end
-            tcp:close()
-            local size = 1
-            if content ~= nil then size = table.getn(content) end
-            local level = node_pos.y
-            local platform_size = math.ceil(math.sqrt((size / 15) * 100))
-            if platform_size < 3 then platform_size = 3 end
-
-            local posx = math.random(-20, 20)
-            local posz = math.random(-20, 20)
-            local new_level = level + math.random(10, 20)
-            local result = create_platform(posx, new_level, posz, platform_size,
-                                           orientation, content, host_info, cp)
-
-            puncher:set_pos({
-                x = result.x + 1,
-                y = result.y + 1,
-                z = result.z + 1
-            })
+            platforms.create(pos, platform_size, orientation, "mine9:platform")
+            platforms.set_meta(pos, platform_size, "horizontal", "host_info", host_info)
+            puncher:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
+            list_dir(content, pos)
 
         end
     end,
