@@ -22,8 +22,28 @@ minetest.register_entity("directories:file", {
                         dir)
         if tool_capabilities.damage_groups.stats == 1 then
             local host_info = get_host_near(puncher)
-            local stats = get_stats(host_info, self.path)
-            print(dump(stats))
+            local s = get_stats(host_info, self.path)
+            local idx = puncher:hud_add({
+                hud_elem_type = "text",
+                position = {x = 0.5, y = 0.5},
+                offset = {x = 0, y = 0},
+                text =  "name:      " .. s.name .. "\n" .. 
+                        "length:    " .. s.length .. "\n" .. 
+                        "owner:     " .. s.uid .. "\n" ..
+                        "group:     " .. s.gid .. "\n" .. 
+                        "access:    " .. s.atime .. "\n" ..
+                        "modified:  " .. s.mtime .. "\n" ..
+                        "mod. by:   " .. s.muid .. "\n" ..
+                        "mode:      " .. s.mode .. "\n" ..   
+                        "type:      " .. s.type .. "\n" ..                                                     
+                        "qid:       " .. "\n" ..
+                        "       type:       " .. s.qid.type .. "\n" .. 
+                        "       version:    " .. s.qid.version .. "\n" ..                                
+                        "       path:       " .. s.qid.path .. "\n",                           
+                                     
+                alignment = {x = 0, y = 0}, -- center aligned
+                scale = {x = 100, y = 100} -- covered later
+            })
         end
     end,
 
