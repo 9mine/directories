@@ -196,7 +196,6 @@ show_stats = function(puncher, path)
     for k, v in ipairs(result["mode_bits"]) do 
         mode_bits = mode_bits .. v .. " "  
     end
-
     local perms = result["perms"]
     puncher:hud_remove(current_hud[puncher:get_player_name()])
     local stats = puncher:hud_add({
@@ -217,11 +216,10 @@ show_stats = function(puncher, path)
             "qid:\t\t" .. "\n" .. 
             "       type:\t" .. s.qid.type .. "\n" ..
             "       version:\t" .. s.qid.version .. "\n" .. 
-            "       path:\t" .. s.qid.path .. "\n",
+            "       path:\t" .. "0x" .. string.format("%08X%08X", s.qid.path_hi, s.qid.path_lo) .. "\n",
 
 
-        alignment = {x = 1, y = 0} -- center aligned
-        -- scale = {x = 250, y = 100} -- covered later
+        alignment = {x = 1, y = 0} 
     })
     current_hud[puncher:get_player_name()] = stats
 end
