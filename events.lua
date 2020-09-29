@@ -25,14 +25,12 @@ minetest.register_on_player_receive_fields(
             local host_info = platforms.get_host_info(node_pos)
             local empty_slots = platforms.get_empty_slots(node_pos)
             local full_slots = platforms.get_full_slots(node_pos)
-            create_file(host_info, file_name, file_content)
-            local file = get_stat(host_info, file_name)
-
+            create_new_file(host_info, file_name, file_content)
             local index, empty_slot = next(empty_slots)
+            local file = get_stat(host_info, file_name)
             local p = spawn_file(file, empty_slot, creation_info["orientation"])
             table.insert(full_slots, p)
             table.remove(empty_slots, index)
-
             platforms.set_empty_slots(node_pos, empty_slots)
             platforms.set_full_slots(node_pos, full_slots)
 

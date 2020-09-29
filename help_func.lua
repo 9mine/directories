@@ -69,7 +69,7 @@ get_stats = function(host_info, path)
         tcp:close()
         return
     end
-    local conn = np.attach(tcp, "root", "/")
+    local conn = np.attach(tcp, "root", "")
 
     local f = conn:newfid()
     local stats = nil
@@ -90,7 +90,7 @@ get_dir = function(host_info, path)
         tcp:close()
         return
     end
-    local conn = np.attach(tcp, "root", "/")
+    local conn = np.attach(tcp, "root", "")
     local result, dir = pcall(readdir, conn, path == "/" and "./" or path)
     if not result then
         tcp:close()

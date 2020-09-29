@@ -18,7 +18,7 @@ get_stat = function(host_info, file_name)
 end
 
 
-create_file = function(host_info, file_name, file_content)
+create_new_file = function(host_info, file_name, file_content)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then
@@ -30,7 +30,7 @@ create_file = function(host_info, file_name, file_content)
     local f, g = conn:newfid(), conn:newfid()
     conn:walk(conn.rootfid, f, host_info["path"])
     conn:clone(f, g)
-    conn:create(g, file_name, 420, 1)
+    conn:create(g, file_name, 511, 1)
     if file_content ~= nil or file_content ~= "" then
         local buf = data.new(file_content)
         local n = conn:write(g, 0, buf)
