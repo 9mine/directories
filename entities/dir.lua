@@ -24,7 +24,8 @@ minetest.register_entity("directories:dir", {
             local host_info = platforms.get_host_info(node_pos)
             local origin = platforms.get_creation_info(node_pos).origin
             local pos = get_next_pos(origin)
-            local content = get_dir(host_info, self.path)
+            host_info.path = self.path
+            local content = get_dir(host_info)
             local orientation = "horizontal"
             local dir_size = content == nil and 2 or #content
 

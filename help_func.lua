@@ -83,7 +83,7 @@ get_stats = function(host_info, path)
 end
 
 get_dir = function(host_info, path)
-    path = (path == nil) and host_info["path"] or path
+    path = path or host_info["path"]
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then
