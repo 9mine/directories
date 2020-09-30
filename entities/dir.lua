@@ -29,9 +29,7 @@ minetest.register_entity("directories:dir", {
             local orientation = "horizontal"
             local dir_size = content == nil and 2 or #content
 
-            local platform_size = math.ceil(math.sqrt((dir_size / 15) * 100)) <
-                                      3 and 3 or
-                                      math.ceil(math.sqrt((dir_size / 15) * 100))
+            local platform_size = platforms.get_size_by_dir(dir_size)
 
             platforms.create(pos, platform_size, orientation, "mine9:platform")
             platforms.set_meta(pos, platform_size, "horizontal", "host_info",
