@@ -2,8 +2,7 @@ get_stat = function(host_info, file_name)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then
-        print("dump of error newest .. " .. dump(err))
-        print("Connection error")
+        print("Connection error: " .. dump(err))
         return
     end
     local conn = np.attach(tcp, "root", "")
@@ -22,8 +21,7 @@ create_new_file = function(host_info, file_name, file_content)
     local tcp = socket:tcp()
     local connection, err = tcp:connect(host_info["host"], host_info["port"])
     if (err ~= nil) then
-        print("dump of error newest .. " .. dump(err))
-        print("Connection error")
+        print("Connection error: " .. dump(err))
         return
     end
     local conn = np.attach(tcp, "root", "")
