@@ -7,7 +7,7 @@ parse_mode_bits = function(mode)
         ["MOUNT"] = 0x10,
         ["AUTH"] = 0x08,
         ["TMP"] = 0x04,
-        ["LINK"] = 0x02,
+        ["LINK"] = 0x02
     }
 
     local owner = {}
@@ -40,23 +40,22 @@ parse_mode_bits = function(mode)
     local result = d:layout(l)
 
     local mode_bits = {}
-    for k, v in pairs(perms) do 
+    for k, v in pairs(perms) do
         local r = (bit.band(result.bits, v) ~= 0) and table.insert(mode_bits, k)
     end
     res["mode_bits"] = mode_bits
 
     local p = ""
-    for _, v in pairs(permissions) do 
+    for _, v in pairs(permissions) do
         for m, b in pairs(v) do
-           for y, z in pairs(b) do 
-            local r = (bit.band(result.permissions, z) ~=  0) and y or "-"
-            p = p .. r
-           end
+            for y, z in pairs(b) do
+                local r = (bit.band(result.permissions, z) ~= 0) and y or "-"
+                p = p .. r
+            end
         end
     end
 
     res["perms"] = p
-
 
     return res
 end
@@ -194,8 +193,8 @@ show_stats = function(puncher, path)
     local s = get_stats(host_info, path)
     local result = parse_mode_bits(s.mode)
     local mode_bits = ""
-    for k, v in ipairs(result["mode_bits"]) do 
-        mode_bits = mode_bits .. v .. " "  
+    for k, v in ipairs(result["mode_bits"]) do
+        mode_bits = mode_bits .. v .. " "
     end
     local perms = result["perms"]
     puncher:hud_remove(current_hud[puncher:get_player_name()])
@@ -203,25 +202,37 @@ show_stats = function(puncher, path)
         hud_elem_type = "text",
         position = {x = 0.8, y = 0.2},
         offset = {x = 0, y = 0},
-        text = "name:\t\t" .. s.name .. "\n" .. 
-        "length:\t\t" ..
-            filesize(s.length) .. "\n" .. 
-            "owner:\t\t" .. s.uid .. "\n" ..
-            "group:\t\t" .. s.gid .. "\n" .. 
-            "access:\t\t" .. os.date("%x %X", s.atime) .. "\n" .. 
-            "modified:\t\t" .. os.date("%x %X", s.mtime) .. "\n" .. 
-            "mod. by:\t\t" .. (s.muid == "" and "-" or s.muid) .. "\n" .. 
-            "mode:\t\t" .. (mode_bits == "" and "FILE" or mode_bits) .. "\n" .. 
-            "perms:\t\t" .. perms .. "\n" ..
-            "type:\t\t" .. s.type .. "\n" .. 
-            "qid:\t\t" .. "\n" .. 
-            "       type:\t" .. s.qid.type .. "\n" ..
-            "       version:\t" .. s.qid.version .. "\n" .. 
-            "       path:\t" .. "0x" .. string.format("%08X%08X", s.qid.path_hi, s.qid.path_lo) .. "\n",
+        text = "name:\t\t" .. s.name .. "\n" .. "length:\t\t" ..
+            filesize(s.length) .. "\n" .. "owner:\t\t" .. s.uid .. "\n" ..
+            "group:\t\t" .. s.gid .. "\n" .. "access:\t\t" ..
+            os.date("%x %X", s.atime) .. "\n" .. "modified:\t\t" ..
+            os.date("%x %X", s.mtime) .. "\n" .. "mod. by:\t\t" ..
+            (s.muid == "" and "-" or s.muid) .. "\n" .. "mode:\t\t" ..
+            (mode_bits == "" and "FILE" or mode_bits) .. "\n" .. "perms:\t\t" ..
+            perms .. "\n" .. "type:\t\t" .. s.type .. "\n" .. "qid:\t\t" .. "\n" ..
+            "       type:\t" .. s.qid.type .. "\n" .. "       version:\t" ..
+            s.qid.version .. "\n" .. "       path:\t" .. "0x" ..
+            string.format("%08X%08X", s.qid.path_hi, s.qid.path_lo) .. "\n",
 
-
-        alignment = {x = 1, y = 0} 
+        alignment = {x = 1, y = 0}
     })
     current_hud[puncher:get_player_name()] = stats
 end
 
+change_directory = function(player_name, destination)
+    local node_pos, player = nmine.node_pos_near(player_name)
+    local host_info = platforms.get_host_info(node_pos)
+    local origin = platforms.get_creation_info(node_pos).origin
+    local pos = get_next_pos(origin)
+    destination = string.match(destination, "^/") and destination or
+                      host_info.path .. "/" .. destination
+    host_info.path = destination
+    local content = get_dir(host_info)
+    local orientation = "horizontal"
+    local dir_size = content == nil and 2 or #content
+    local platform_size = platforms.get_size_by_dir(dir_size)
+    platforms.create(pos, platform_size, orientation, "mine9:platform")
+    platforms.set_meta(pos, platform_size, "horizontal", "host_info", host_info)
+    player:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
+    list_dir(content, pos)
+end
