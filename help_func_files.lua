@@ -41,3 +41,30 @@ create_new_file = function(host_info, file_name, file_content)
     conn:clunk(conn.rootfid)
     tcp:close()
 end
+
+read_file_content = function(host_info, path)
+    path = path or host_info["path"]
+    local tcp = socket:tcp()
+    local connection, err = tcp:connect(host_info["host"], host_info["port"])
+    if (err ~= nil) then
+        print("Connection error .. " .. dump(err))
+        return
+    end
+    local conn = np.attach(tcp, "root", "")
+    local p = conn:newfid()
+    np:walk(conn.rootfid, p, path)
+    conn:open(p, 0)
+    local buf_size = 4096
+    local offset = 0
+    local content = ""
+    while (true) do
+        local dt = conn:read(p, offset, buf_size)
+        if (dt == nil) then break end
+        content = content .. tostring(dt)
+        offset = offset + #dt
+    end
+    conn:clunk(p)
+    conn:clunk(conn.rootfid)
+    tcp:close()
+    return content ~= "" and nil or content
+end

@@ -239,12 +239,10 @@ end
 compare_listings = function(pos, old_listing, new_listing)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
     local orientation = platforms.get_creation_info(pos).orientation
-
     for k, v in pairs(new_listing) do
         if old_listing[k] ~= nil then
             new_listing[k] = old_listing[k]
             old_listing[k] = nil
-
         else
             local index, empty_slot = next(empty_slots)
             local p = spawn_file(v, empty_slot, orientation)
