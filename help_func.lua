@@ -137,26 +137,33 @@ get_pos_rand = function(player, s)
 end
 
 list_dir = function(content, pos)
-    local empty_slots = platforms.get_empty_slots(pos)
+    local empty_slots = platforms.storage_get(pos, "empty_slots")
     local orientation = platforms.get_creation_info(pos).orientation
     local full_slots = {}
+    local listing = {}
     if content ~= nil then
         for n, file in pairs(content) do
+
             local index, empty_slot = next(empty_slots)
             local p = spawn_file(file, empty_slot, orientation)
+
             table.insert(full_slots, p)
+
+            --table.issert(listing, {file.name = p})
+
             table.remove(empty_slots, index)
         end
     end
-    platforms.set_empty_slots(pos, empty_slots)
-    platforms.set_full_slots(pos, full_slots)
+    platforms.storage_set(pos, "empty_slots", empty_slots)
+
+    platforms.storage_set(pos, "full_slots", full_slots)
 
 end
 
-get_next_pos = function(origin)
-    local x = origin.x + math.random(-15, 15)
-    local y = origin.y + 10 + math.random(5)
-    local z = origin.z + math.random(-15, 15)
+get_next_pos = function(storage)
+    local x = storage.x + math.random(-15, 15)
+    local y = storage.y + 10 + math.random(5)
+    local z = storage.z + math.random(-15, 15)
     return {x = x, y = y, z = z}
 end
 
@@ -185,7 +192,7 @@ end
 get_host_near = function(puncher)
     local pos = puncher:get_pos()
     local node_pos = minetest.find_node_near(pos, 6, {"mine9:platform"})
-    return platforms.get_host_info(node_pos)
+    return platforms.storage_get(node_pos, "host_info")
 end
 
 show_stats = function(puncher, path)
@@ -221,9 +228,9 @@ end
 
 change_directory = function(player_name, destination)
     local node_pos, player = nmine.node_pos_near(player_name)
-    local host_info = platforms.get_host_info(node_pos)
-    local origin = platforms.get_creation_info(node_pos).origin
-    local pos = get_next_pos(origin)
+    local host_info = platforms.storage_get(node_pos, "host_info")
+    local storage = platforms.get_creation_info(node_pos).storage
+    local pos = get_next_pos(storage)
     destination = string.match(destination, "^/") and destination or
                       host_info.path .. "/" .. destination
     host_info.path = destination
@@ -232,7 +239,7 @@ change_directory = function(player_name, destination)
     local dir_size = content == nil and 2 or #content
     local platform_size = platforms.get_size_by_dir(dir_size)
     platforms.create(pos, platform_size, orientation, "mine9:platform")
-    platforms.set_meta(pos, platform_size, "horizontal", "host_info", host_info)
+    platforms.storage_set(pos, "host_info", host_info)
     player:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
     list_dir(content, pos)
 end
