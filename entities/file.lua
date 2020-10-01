@@ -33,7 +33,8 @@ minetest.register_entity("directories:file", {
             }
             local form = table.concat(formspec, "")
 
-            minetest.show_formspec(puncher:get_player_name(), "directories:file_content", form)
+            minetest.show_formspec(puncher:get_player_name(),
+                                   "directories:file_content", form)
         end
     end,
 

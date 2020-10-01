@@ -236,6 +236,8 @@ change_directory = function(player_name, destination)
     list_dir(content, pos)
 end
 
+remove_file = function(file) file:remove() end
+
 compare_listings = function(pos, old_listing, new_listing)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
     local orientation = platforms.get_creation_info(pos).orientation
@@ -251,9 +253,18 @@ compare_listings = function(pos, old_listing, new_listing)
         end
     end
     for k, v in pairs(old_listing) do
-        local objects = minetest.get_objects_inside_radius(v.pos, 1)
+        local objects = minetest.get_objects_inside_radius(v.pos, 1.3)
         if objects[1] ~= nil then
-            objects[1]:remove()
+            objects[1]:set_acceleration({x = 0, y = 20, z = 0})
+            objects[1]:set_properties({
+                physical = false,
+                textures = {
+                    "directories_file.png^[colorize:grey:" ..
+                        math.random(50, 200)
+                }
+            })
+            minetest.after(3, remove_file, objects[1])
+
             table.insert(empty_slots, v.pos)
         end
     end
