@@ -242,7 +242,9 @@ compare_listings = function(pos, old_listing, new_listing)
 
     for k, v in pairs(new_listing) do
         if old_listing[k] ~= nil then
+            new_listing[k] = old_listing[k]
             old_listing[k] = nil
+
         else
             local index, empty_slot = next(empty_slots)
             local p = spawn_file(v, empty_slot, orientation)
@@ -251,9 +253,11 @@ compare_listings = function(pos, old_listing, new_listing)
         end
     end
     for k, v in pairs(old_listing) do
-        local objects = minetest.get_objects_inside_radius(v.pos, 2)
-        objects[1]:remove()
-        table.insert(empty_slots, v.pos)
+        local objects = minetest.get_objects_inside_radius(v.pos, 1)
+        if objects[1] ~= nil then
+            objects[1]:remove()
+            table.insert(empty_slots, v.pos)
+        end
     end
     platforms.storage_set(pos, "listing", new_listing)
     platforms.storage_set(pos, "empty_slots", empty_slots)
