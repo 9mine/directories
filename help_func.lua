@@ -96,38 +96,15 @@ get_dir = function(host_info, path)
         tcp:close()
         return
     end
-    local content = {}
+    local listing = {}
     if dir ~= nil then
         for n, file in pairs(dir) do
-            table.insert(content, {
+            listing[file.name] = {
                 name = file.name,
                 path = (path == "/" and "/" .. file.name or path .. "/" ..
                     file.name),
                 type = (file.qid.type == 128 and 128 or 0)
-            })
-        end
-        return content
-    end
-end
-
-get_dir_listing = function(host_info)
-    local tcp = socket:tcp()
-    local connection, err = tcp:connect(host_info["host"], host_info["port"])
-    if (err ~= nil) then
-        print("Connection error: " .. dump(err))
-        tcp:close()
-        return
-    end
-    local conn = np.attach(tcp, "root", "")
-    local result, dir = pcall(readdir, conn, host_info["path"] == "/" and "./" or host_info["path"])
-    if not result then
-        tcp:close()
-        return
-    end
-    local listing = {}
-    if dir ~= nil then
-        for n, file in pairs(dir) do
-            listing[file.name] = { x = nil, y = nil, z  = nil}
+            }
         end
         return listing
     end
@@ -159,26 +136,18 @@ get_pos_rand = function(player, s)
     return vector.round(vector.add(p, vector.multiply(c, d)))
 end
 
-list_dir = function(content, pos)
+list_dir = function(listing, pos)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
     local orientation = platforms.get_creation_info(pos).orientation
-    local full_slots = {}
-    local listing = {}
-    if content ~= nil then
-        for n, file in pairs(content) do
-
+    if listing ~= nil then
+        for n, file in pairs(listing) do
             local index, empty_slot = next(empty_slots)
             local p = spawn_file(file, empty_slot, orientation)
-
-            table.insert(full_slots, p)
-            listing[file.name] = p
-
+            listing[file.name].pos = p
             table.remove(empty_slots, index)
         end
     end
     platforms.storage_set(pos, "empty_slots", empty_slots)
-
-    platforms.storage_set(pos, "full_slots", full_slots)
     platforms.storage_set(pos, "listing", listing)
 
 end
@@ -209,7 +178,7 @@ spawn_file = function(file, empty_slot, orientation)
         z = orientation == "horizontal" and 0 or -6
     })
     entity:get_luaentity().path = file.path
-    return p, entity
+    return empty_slot, entity
 end
 
 get_host_near = function(puncher)
@@ -265,4 +234,33 @@ change_directory = function(player_name, destination)
     platforms.storage_set(pos, "host_info", host_info)
     player:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
     list_dir(content, pos)
+end
+
+compare_listings = function(pos, old_listing, new_listing)
+    local empty_slots = platforms.storage_get(pos, "empty_slots")
+    local orientation = platforms.get_creation_info(pos).orientation
+
+    for k, v in pairs(new_listing) do
+        if old_listing[k] ~= nil then
+            old_listing[k] = nil
+        else
+            local index, empty_slot = next(empty_slots)
+            local p = spawn_file(v, empty_slot, orientation)
+            new_listing[k].pos = p
+            table.remove(empty_slots, index)
+        end
+    end
+    for k, v in pairs(old_listing) do
+        local objects = minetest.get_objects_inside_radius(v.pos, 2)
+        objects[1]:remove()
+        table.insert(empty_slots, v.pos)
+    end
+    platforms.storage_set(pos, "listing", new_listing)
+    platforms.storage_set(pos, "empty_slots", empty_slots)
+end
+
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end

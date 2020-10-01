@@ -6,13 +6,13 @@ minetest.register_on_player_receive_fields(
             if not host_info["host"] or not host_info["port"] then
                 return
             end
-            local content = get_dir(host_info, host_info.path)
-            local size = content == nil and 2 or
-                             math.ceil(math.sqrt((#content / 15) * 100))
+            local listing = get_dir(host_info, host_info.path)
+            local size = listing == nil and 2 or
+                             math.ceil(math.sqrt((tablelength(listing) / 15) * 100))
             local pos = get_pos_rand(player, size)
             platforms.create(pos, size, "horizontal", "mine9:platform")
             platforms.storage_set(pos, "host_info", host_info)
-            if content ~= nil then list_dir(content, pos) end
+            if listing ~= nil then list_dir(listing, pos) end
         end
 
         if formname == "directories:create_file" then
