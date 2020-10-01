@@ -110,6 +110,29 @@ get_dir = function(host_info, path)
     end
 end
 
+get_dir_listing = function(host_info)
+    local tcp = socket:tcp()
+    local connection, err = tcp:connect(host_info["host"], host_info["port"])
+    if (err ~= nil) then
+        print("Connection error: " .. dump(err))
+        tcp:close()
+        return
+    end
+    local conn = np.attach(tcp, "root", "")
+    local result, dir = pcall(readdir, conn, host_info["path"] == "/" and "./" or host_info["path"])
+    if not result then
+        tcp:close()
+        return
+    end
+    local listing = {}
+    if dir ~= nil then
+        for n, file in pairs(dir) do
+            listing[file.name] = { x = nil, y = nil, z  = nil}
+        end
+        return listing
+    end
+end
+
 parse_remote_address = function(remote_address)
     local t = {}
     for str in string.gmatch(remote_address, "[^! ]+") do
@@ -148,8 +171,7 @@ list_dir = function(content, pos)
             local p = spawn_file(file, empty_slot, orientation)
 
             table.insert(full_slots, p)
-
-            --table.issert(listing, {file.name = p})
+            listing[file.name] = p
 
             table.remove(empty_slots, index)
         end
@@ -157,6 +179,7 @@ list_dir = function(content, pos)
     platforms.storage_set(pos, "empty_slots", empty_slots)
 
     platforms.storage_set(pos, "full_slots", full_slots)
+    platforms.storage_set(pos, "listing", listing)
 
 end
 
