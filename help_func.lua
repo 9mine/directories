@@ -260,11 +260,7 @@ change_directory = function(player_name, destination)
 
     local sd_platforms = minetest.deserialize(sd:get_string("platforms"))
 
-    sd_platforms[count] = {}
-    sd_platforms[count].listing = listing
-    sd_platforms[count].host_info = host_info
-    sd_platforms[count].creation_info = creation_info
-
+    sd_platforms[count] = pos
     sd:set_string("platforms", minetest.serialize(sd_platforms))
 
 end
@@ -303,9 +299,6 @@ compare_listings = function(pos, old_listing, new_listing)
             table.insert(empty_slots, v.pos)
         end
     end
-    local sd_platforms = minetest.deserialize(sd:get_string("platforms"))
-    sd_platforms[count].listing = new_listing
-    sd:set_string("platforms", minetest.serialize(sd_platforms))
     platforms.storage_set(pos, "listing", new_listing)
     platforms.storage_set(pos, "empty_slots", empty_slots)
 end

@@ -28,11 +28,7 @@ minetest.register_on_player_receive_fields(
 
                 local sd_platforms = minetest.deserialize(
                                          sd:get_string("platforms"))
-                sd_platforms[count] = {}
-                sd_platforms[count].listing = lst
-                sd_platforms[count].host_info = host_info
-                sd_platforms[count].creation_info = creation_info
-
+                sd_platforms[count] = pos
                 sd:set_string("platforms", minetest.serialize(sd_platforms))
             end
 
