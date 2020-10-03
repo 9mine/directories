@@ -1,3 +1,6 @@
+-- storage for mod directories 
+sd = minetest.get_mod_storage()
+sd:set_string("platforms", minetest.serialize({}))
 print("directories mod is loading ...")
 -- libs
 np = require '9p'

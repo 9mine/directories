@@ -149,7 +149,7 @@ list_dir = function(listing, pos)
     end
     platforms.storage_set(pos, "empty_slots", empty_slots)
     platforms.storage_set(pos, "listing", listing)
-
+    return listing
 end
 
 get_next_pos = function(storage)
@@ -160,6 +160,7 @@ get_next_pos = function(storage)
 end
 
 spawn_file = function(file, empty_slot, orientation)
+
     local p = {
         x = empty_slot.x,
         y = orientation == "horizontal" and empty_slot.y + math.random(3, 8) or
@@ -167,9 +168,11 @@ spawn_file = function(file, empty_slot, orientation)
         z = orientation == "horizontal" and empty_slot.z or empty_slot.z +
             math.random(3, 8)
     }
+
     local entity = minetest.add_entity(p,
                                        file.type == 128 and "directories:dir" or
                                            "directories:file")
+
     entity:set_nametag_attributes({color = "black", text = file.name})
     entity:set_armor_groups({immortal = 0})
     entity:set_acceleration({
@@ -177,7 +180,9 @@ spawn_file = function(file, empty_slot, orientation)
         y = orientation == "horizontal" and -6 or 0,
         z = orientation == "horizontal" and 0 or -6
     })
+
     entity:get_luaentity().path = file.path
+
     return empty_slot, entity
 end
 
@@ -220,20 +225,48 @@ end
 
 change_directory = function(player_name, destination)
     local node_pos, player = nmine.node_pos_near(player_name)
+
     local host_info = platforms.storage_get(node_pos, "host_info")
+
     local storage = platforms.get_creation_info(node_pos).storage
+
     local pos = get_next_pos(storage)
+
     destination = string.match(destination, "^/") and destination or
                       host_info.path .. "/" .. destination
+
     host_info.path = destination
+
     local content = get_dir(host_info)
+
     local orientation = "horizontal"
+
     local dir_size = content == nil and 2 or #content
+
     local platform_size = platforms.get_size_by_dir(dir_size)
-    platforms.create(pos, platform_size, orientation, "mine9:platform")
+
+    local count = sd:get_int("count") + 1
+
+    local creation_info = platforms.create(pos, platform_size, orientation, "mine9:platform", count)
+
     platforms.storage_set(pos, "host_info", host_info)
+
     player:set_pos({x = pos.x + 1, y = pos.y + 1, z = pos.z + 1})
-    list_dir(content, pos)
+
+    local listing = list_dir(content, pos)
+
+                sd:set_int("count", count)
+
+                local sd_platforms =
+                minetest.deserialize(sd:get_string("platforms"))
+
+                sd_platforms[count] = {}
+                sd_platforms[count].listing         = lst
+                sd_platforms[count].host_info       = host_info
+                sd_platforms[count].creation_info   = creation_info
+
+                sd:set_string("platforms", minetest.serialize(sd_platforms))
+
 end
 
 remove_file = function(file) file:remove() end
