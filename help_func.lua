@@ -138,7 +138,6 @@ end
 
 list_dir = function(listing, pos)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
-    print("EMPTY SLOTS ARE: .." .. dump(empty_slots))
     local orientation = platforms.get_creation_info(pos).orientation
     if listing ~= nil then
         for n, file in pairs(listing) do
