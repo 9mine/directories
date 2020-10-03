@@ -247,7 +247,8 @@ change_directory = function(player_name, destination)
 
     local count = sd:get_int("count") + 1
 
-    local creation_info = platforms.create(pos, platform_size, orientation, "mine9:platform", count)
+    local creation_info = platforms.create(pos, platform_size, orientation,
+                                           "mine9:platform", count)
 
     platforms.storage_set(pos, "host_info", host_info)
 
@@ -255,17 +256,16 @@ change_directory = function(player_name, destination)
 
     local listing = list_dir(content, pos)
 
-                sd:set_int("count", count)
+    sd:set_int("count", count)
 
-                local sd_platforms =
-                minetest.deserialize(sd:get_string("platforms"))
+    local sd_platforms = minetest.deserialize(sd:get_string("platforms"))
 
-                sd_platforms[count] = {}
-                sd_platforms[count].listing         = lst
-                sd_platforms[count].host_info       = host_info
-                sd_platforms[count].creation_info   = creation_info
+    sd_platforms[count] = {}
+    sd_platforms[count].listing = lst
+    sd_platforms[count].host_info = host_info
+    sd_platforms[count].creation_info = creation_info
 
-                sd:set_string("platforms", minetest.serialize(sd_platforms))
+    sd:set_string("platforms", minetest.serialize(sd_platforms))
 
 end
 
@@ -273,7 +273,9 @@ remove_file = function(file) file:remove() end
 
 compare_listings = function(pos, old_listing, new_listing)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
-    local orientation = platforms.get_creation_info(pos).orientation
+    local creation_info = platforms.get_creation_info(pos)
+    local orientation = creation_info.orientation
+    local count = creation_info.count
     for k, v in pairs(new_listing) do
         if old_listing[k] ~= nil then
             new_listing[k] = old_listing[k]
@@ -301,6 +303,9 @@ compare_listings = function(pos, old_listing, new_listing)
             table.insert(empty_slots, v.pos)
         end
     end
+    local sd_platforms = minetest.deserialize(sd:get_string("platforms"))
+    sd_platforms[count].listing = new_listing
+    sd:set_string("platforms", minetest.serialize(sd_platforms))
     platforms.storage_set(pos, "listing", new_listing)
     platforms.storage_set(pos, "empty_slots", empty_slots)
 end
