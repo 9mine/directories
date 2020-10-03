@@ -138,6 +138,7 @@ end
 
 list_dir = function(listing, pos)
     local empty_slots = platforms.storage_get(pos, "empty_slots")
+    print("EMPTY SLOTS ARE: .." .. dump(empty_slots))
     local orientation = platforms.get_creation_info(pos).orientation
     if listing ~= nil then
         for n, file in pairs(listing) do
@@ -241,7 +242,7 @@ change_directory = function(player_name, destination)
 
     local orientation = "horizontal"
 
-    local dir_size = content == nil and 2 or #content
+    local dir_size = content == nil and 2 or tablelength(content)
 
     local platform_size = platforms.get_size_by_dir(dir_size)
 
@@ -261,7 +262,7 @@ change_directory = function(player_name, destination)
     local sd_platforms = minetest.deserialize(sd:get_string("platforms"))
 
     sd_platforms[count] = {}
-    sd_platforms[count].listing = lst
+    sd_platforms[count].listing = listing
     sd_platforms[count].host_info = host_info
     sd_platforms[count].creation_info = creation_info
 

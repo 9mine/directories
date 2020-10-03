@@ -10,12 +10,14 @@ minetest.register_on_player_receive_fields(
             end
 
             local listing = get_dir(host_info, host_info.path)
-
+            print("DUMP TABLELENGTH LISTIND: " .. dump())
             local size = listing == nil and 2 or
                              platforms.get_size_by_dir(tablelength(listing))
 
             local pos = get_pos_rand(player, size)
+
             local count = sd:get_int("count") + 1
+
             local creation_info = platforms.create(pos, size, "horizontal",
                                                    "mine9:platform", count)
 
